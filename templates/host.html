@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load tages %}
+{% block body %}
+<body>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>主机名</th>
+                    <th>状态</th>
+                    <th>种类</th>
+                    <th>主机组</th>
+                    <th>ip</th>
+                    <th>用户名</th>
+                    <th>密码</th>
+                    <th><span class="glyphicon glyphicon-plus" aria-hidden="true" style="cursor:pointer" ></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for host in hosts %}
+                    <tr>
+                        <td>{{ host.host_name }}</td>
+                        <td>{{ host.get_state_display }}</td>
+                        <td>{{ host.get_kind_display }}</td>
+                        <td>{{ host.group_id }}</td>
+                        <td>{{ host.ip }}</td>
+                        <td>{{ host.username}}</td>
+                        <td>{{ host.password }}</td>
+                        <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
+                        <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if hosts.has_previous %}
+                <li><a href="?page={{ hosts.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&laquo;</a></li>
+            {% endif %}
+            {% for page in hosts.paginator.page_range %}
+                {% page_ele page hosts.number %}
+            {% endfor %}
+            {% if hosts.has_next %}
+                <li><a href="?page={{ hosts.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+    $('.glyphicon-plus').click(function(){
+        $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
+    });
+    </script>
+</body>
+{% endblock %}
+
+
