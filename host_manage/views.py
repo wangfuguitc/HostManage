@@ -59,8 +59,7 @@ class Logout(View):
 class Host(View):
     def get(self, request):
         data = {}
-        user = models.User.objects.get(username=request.user.username)
-        contact_list = user.host.all().order_by('id')
+        contact_list = request.user.host.all().order_by('id')
         paginator = Paginator(contact_list, 2)
         page = request.GET.get('page', 1)
         try:
@@ -74,17 +73,16 @@ class Host(View):
         if request.user.get_role_display() == 'admin':
             if request.POST.get('handle') == 'add':
                 data={}
-                data['host_name'] = request.POST.get('host_name')
-                data['state'] = request.POST.get('state')
-                data['kind'] = request.POST.get('kind')
-                data['group_id'] = models.HostGroup.objects.get(id=request.POST.get('group_id'))
-                data['ip'] = request.POST.get('ip')
-                data['username'] = request.POST.get('username')
-                data['password'] = request.POST.get('password')
                 try:
+                    data['host_name'] = request.POST.get('host_name')
+                    data['state'] = request.POST.get('state')
+                    data['kind'] = request.POST.get('kind')
+                    data['group_id'] = models.HostGroup.objects.get(id=request.POST.get('group_id'))
+                    data['ip'] = request.POST.get('ip')
+                    data['username'] = request.POST.get('username')
+                    data['password'] = request.POST.get('password')
                     host_obj = models.Host.objects.create(**data)
-                    user_obj = models.User.objects.get(username=request.user.username)
-                    user_obj.host.add(host_obj)
+                    request.user.host.add(host_obj)
                 except:
                     return HttpResponse('添加失败')
         return redirect('/index')
