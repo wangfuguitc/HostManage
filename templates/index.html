@@ -1,8 +1,57 @@
 {% extends 'base.html' %}
 {% block body %}
 <body>
-    <div id="backdropId" class="modal-backdrop fade in" style="display:none;"></div>
-    <div style="position: fixed;z-index:100"></div>
+    <div id="backdropId" class="modal-backdrop fade in" style="display:none"></div>
+    <div id="hostAddId" style="display:none">
+        <div style="background: white; width: 500px;height: 600px;margin:50px 500px">
+            <form style="padding: 10px" method="post" action="host.html">
+                {% csrf_token  %}
+                <input type="hidden"  name="handle" value="add" >
+                <div class="form-group">
+                    <label>主机名</label>
+                    <input class="form-control" name="host_name">
+                </div>
+                <div class="form-group">
+                    <label>状态</label>
+                    <select class="form-control" name="state">
+                        <option value ="1">在线</option>
+                        <option value ="2">下线</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>种类</label>
+                    <select class="form-control" name="kind">
+                        <option value ="1">服务器</option>
+                        <option value ="2">防火墙</option>
+                        <option value ="3">路由器</option>
+                        <option value ="4">交换机</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>主机组</label>
+                    <select class="form-control" name="group_id">
+                        {% for group in hostgroup %}
+                            <option value ="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ip</label>
+                    <input class="form-control" name="ip">
+                </div>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input class="form-control" name="username">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input class="form-control" name="password">
+                </div>
+                <button type="submit" class="btn btn-default">添加</button>
+                <button type="reset" class="btn btn-default" style="float: right" id="hostAddHideId">取消</button>
+            </form>
+        </div>
+    </div>
     <nav class="navbar navbar-inverse" style="margin: 0">
         <p class="navbar-brand" >HostManage</p>
         <div class="navbar-brand btn-group " style="margin-right:50px;float: right" >
@@ -30,6 +79,10 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $('.dropdown-toggle').dropdown()
+        $('#hostAddHideId').click(function(){
+            $('#backdropId').attr("style","display:none")
+            $('#hostAddId').attr("style","display:none")
+        })
         $('.list-group-item').click(function(e){
             e.preventDefault()
             $(this).parent().siblings().children().removeClass('active')

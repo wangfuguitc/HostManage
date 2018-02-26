@@ -10,7 +10,7 @@ class User(AbstractUser):
         (2, 'user'),
     )
     username = models.CharField(max_length=32, unique=True)
-    password = models.CharField(max_length=32)
+    password = models.CharField(max_length=128)
     name = models.CharField(max_length=32)
     role = models.IntegerField(choices=role_type_choices, default=1)
     host = models.ManyToManyField('Host', blank=True)

@@ -45,7 +45,8 @@ class Login(View):
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class Index(View):
     def get(self, request):
-        return render(request, 'index.html')
+        hostgroup = models.HostGroup.objects.all()
+        return render(request, 'index.html', {'hostgroup': hostgroup})
 
 
 class Logout(View):
@@ -69,6 +70,24 @@ class Host(View):
         except EmptyPage:
             hosts = paginator.page(paginator.num_pages)
         return render(request, 'host.html', {'hosts': hosts})
+    def post(self, request):
+        if request.user.get_role_display() == 'admin':
+            if request.POST.get('handle') == 'add':
+                data={}
+                data['host_name'] = request.POST.get('host_name')
+                data['state'] = request.POST.get('state')
+                data['kind'] = request.POST.get('kind')
+                data['group_id'] = models.HostGroup.objects.get(id=request.POST.get('group_id'))
+                data['ip'] = request.POST.get('ip')
+                data['username'] = request.POST.get('username')
+                data['password'] = request.POST.get('password')
+                try:
+                    host_obj = models.Host.objects.create(**data)
+                    user_obj = models.User.objects.get(username=request.user.username)
+                    user_obj.host.add(host_obj)
+                except:
+                    return HttpResponse('添加失败')
+        return redirect('/index')
 
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')

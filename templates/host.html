@@ -13,7 +13,9 @@
                     <th>ip</th>
                     <th>用户名</th>
                     <th>密码</th>
-                    <th><span class="glyphicon glyphicon-plus" aria-hidden="true" style="cursor:pointer" ></span></th>
+                    {% ifequal user.get_role_display 'admin' %}
+                        <th><span class="glyphicon glyphicon-plus" aria-hidden="true" style="cursor:pointer" ></span></th>
+                    {% endifequal %}
                 </tr>
             </thead>
             <tbody>
@@ -26,8 +28,10 @@
                         <td>{{ host.ip }}</td>
                         <td>{{ host.username}}</td>
                         <td>{{ host.password }}</td>
-                        <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
-                        <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                        {% ifequal user.get_role_display 'admin' %}
+                            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
+                            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                        {% endifequal %}
                     </tr>
                 {% endfor %}
             </tbody>
@@ -55,6 +59,7 @@
     <script>
     $('.glyphicon-plus').click(function(){
         $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
+        $(window.top.document.getElementById('hostAddId')).attr("style","position: fixed;display:dislpay;z-index:2");
     });
     </script>
 </body>
