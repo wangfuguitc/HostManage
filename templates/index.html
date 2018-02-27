@@ -9,43 +9,31 @@
                 <input type="hidden"  name="handle" value="add" >
                 <div class="form-group">
                     <label>主机名</label>
-                    <input class="form-control" name="host_name">
+                    {{ host_form.host_name }}
                 </div>
                 <div class="form-group">
                     <label>状态</label>
-                    <select class="form-control" name="state">
-                        <option value ="1">在线</option>
-                        <option value ="2">下线</option>
-                    </select>
+                    {{ host_form.state }}
                 </div>
                 <div class="form-group">
                     <label>种类</label>
-                    <select class="form-control" name="kind">
-                        <option value ="1">服务器</option>
-                        <option value ="2">防火墙</option>
-                        <option value ="3">路由器</option>
-                        <option value ="4">交换机</option>
-                    </select>
+                    {{ host_form.kind }}
                 </div>
                 <div class="form-group">
                     <label>主机组</label>
-                    <select class="form-control" name="group_id">
-                        {% for group in hostgroup %}
-                            <option value ="{{ group.id }}">{{ group.name }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ host_form.group_id }}
                 </div>
                 <div class="form-group">
                     <label>ip</label>
-                    <input class="form-control" name="ip">
+                    {{ host_form.ip }}
                 </div>
                 <div class="form-group">
                     <label>用户名</label>
-                    <input class="form-control" name="username">
+                    {{ host_form.username }}
                 </div>
                 <div class="form-group">
                     <label>密码</label>
-                    <input class="form-control" name="password">
+                    {{ host_form.password }}
                 </div>
                 <button type="submit" class="btn btn-default">添加</button>
                 <button type="reset" class="btn btn-default" style="float: right" id="hostAddHideId">取消</button>

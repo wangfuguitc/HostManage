@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from host_manage import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from host_manage.forms import HostForm
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -46,7 +47,8 @@ class Login(View):
 class Index(View):
     def get(self, request):
         hostgroup = models.HostGroup.objects.all()
-        return render(request, 'index.html', {'hostgroup': hostgroup})
+        host_form = HostForm()
+        return render(request, 'index.html', {'hostgroup': hostgroup, 'host_form': host_form})
 
 
 class Logout(View):
@@ -72,18 +74,14 @@ class Host(View):
     def post(self, request):
         if request.user.get_role_display() == 'admin':
             if request.POST.get('handle') == 'add':
-                data={}
-                try:
-                    data['host_name'] = request.POST.get('host_name')
-                    data['state'] = request.POST.get('state')
-                    data['kind'] = request.POST.get('kind')
-                    data['group_id'] = models.HostGroup.objects.get(id=request.POST.get('group_id'))
-                    data['ip'] = request.POST.get('ip')
-                    data['username'] = request.POST.get('username')
-                    data['password'] = request.POST.get('password')
-                    host_obj = models.Host.objects.create(**data)
+                host_form = HostForm(request.POST)
+                if host_form.is_valid():
+                    obj = host_form.cleaned_data
+                    obj['group_id'] = models.HostGroup.objects.get(id=obj['group_id'])
+                    host_obj = models.Host.objects.create(**obj)
                     request.user.host.add(host_obj)
-                except:
+                else:
+                    print(host_form.errors)
                     return HttpResponse('添加失败')
         return redirect('/index')
 
