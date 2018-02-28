@@ -80,9 +80,9 @@ class Host(View):
                     obj['group_id'] = models.HostGroup.objects.get(id=obj['group_id'])
                     host_obj = models.Host.objects.create(**obj)
                     request.user.host.add(host_obj)
+                    return HttpResponse('ok')
                 else:
-                    print(host_form.errors)
-                    return HttpResponse('添加失败')
+                    return HttpResponse(host_form.errors.as_json())
         return redirect('/index')
 
 
