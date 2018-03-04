@@ -30,7 +30,12 @@
                         <td>{{ host.password }}</td>
                         {% ifequal user.get_role_display 'admin' %}
                             <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
-                            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                            <form method="post" action="host.html" class="form-group">
+                                {% csrf_token %}
+                                <input name="handle" value="delete" type="hidden">
+                                <input name="host_name" value="{{ host.host_name }}" type="hidden">
+                                <td><button type="submit" style="border: none;background-color:transparent;outline: none"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></button></td>
+                            </form>
                         {% endifequal %}
                     </tr>
                 {% endfor %}
@@ -61,6 +66,15 @@
         $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
         $(window.top.document.getElementById('hostAddId')).attr("style","position: fixed;display:dislpay;z-index:2");
     });
+    $('.form-group').submit(function () {
+        var a = confirm('是否确认删除')
+        if(a==true){
+            return
+        }
+        else {
+            event.preventDefault();
+        }
+    })
     </script>
 </body>
 {% endblock %}

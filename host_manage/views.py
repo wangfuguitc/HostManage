@@ -83,6 +83,9 @@ class Host(View):
                     return HttpResponse('ok')
                 else:
                     return HttpResponse(host_form.errors.as_json())
+            if request.POST.get('handle') == 'delete':
+                models.Host.objects.filter(host_name=request.POST.get('host_name')).delete()
+                return redirect('/host')
         return redirect('/index')
 
 
