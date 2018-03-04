@@ -47,6 +47,51 @@
             </form>
         </div>
     </div>
+    <div id="hostModifyId" style="display:none">
+        <div style="background: white; width: 500px;height: 600px;margin:50px 500px">
+            <form style="padding: 10px" id="hostModifyFormId">
+                {% csrf_token  %}
+                <input type="hidden"  name="handle" value="modify" >
+                <div class="form-group">
+                    <label style="display: block">主机名</label>
+                    {{ host_form.host_name }}
+                    <span id="host_name_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">状态</label>
+                    {{ host_form.state }}
+                    <span id="state_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">种类</label>
+                    {{ host_form.kind }}
+                    <span id="kind_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">主机组</label>
+                    {{ host_form.group_id }}
+                    <span id="group_id_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">ip</label>
+                    {{ host_form.ip }}
+                    <span id="ip_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">用户名</label>
+                    {{ host_form.username }}
+                    <span id="username_id" style="color:red"></span>
+                </div>
+                <div class="form-group">
+                    <label style="display: block">密码</label>
+                    {{ host_form.password }}
+                    <span id="password_id" style="color:red"></span>
+                </div>
+                <button type="submit" class="btn btn-default" id="hostModifyButtonId">修改</button>
+                <button type="reset" class="btn btn-default" style="margin-left: 200px" id="hostModifyHideId">取消</button>
+            </form>
+        </div>
+    </div>
     <nav class="navbar navbar-inverse" style="margin: 0">
         <p class="navbar-brand" >HostManage</p>
         <div class="navbar-brand btn-group " style="margin-right:50px;float: right" >
@@ -78,6 +123,11 @@
             $(this).siblings().find("span").text('');
             $('#backdropId').attr("style","display:none");
             $('#hostAddId').attr("style","display:none")
+        });
+        $('#hostModifyHideId').click(function(){
+            $(this).siblings().find("span").text('');
+            $('#backdropId').attr("style","display:none");
+            $('#hostModifyId').attr("style","display:none")
         });
         $('.list-group-item').click(function(e){
             e.preventDefault();
@@ -121,7 +171,10 @@
                     }
                 }
             })
-        })
+        });
+        function modify(data_dict) {
+            alert(data_dict['id'])
+        }
     </script>
 </body>
 {% endblock %}

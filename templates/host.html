@@ -29,7 +29,7 @@
                         <td>{{ host.username}}</td>
                         <td>{{ host.password }}</td>
                         {% ifequal user.get_role_display 'admin' %}
-                            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
+                            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer" id="{{ host.host_name }}"></span></td>
                             <form method="post" action="host.html" class="form-group">
                                 {% csrf_token %}
                                 <input name="handle" value="delete" type="hidden">
@@ -65,6 +65,25 @@
     $('.glyphicon-plus').click(function(){
         $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
         $(window.top.document.getElementById('hostAddId')).attr("style","position: fixed;display:dislpay;z-index:2");
+    });
+    $('.glyphicon-pencil').click(function(){
+        $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
+        $(window.top.document.getElementById('hostModifyId')).attr("style","position: fixed;display:dislpay;z-index:2");
+        var data_dict={};
+        {% for host in hosts %}
+            if($(this).attr("id")=={{ host.host_name }}){
+                data_dict['id']="{{ host.id }}";
+                data_dict['host_name']="{{ host.host_name }}";
+                data_dict['state']="{{ host.get_state_display }}";
+                data_dict['kind']="{{ host.get_kind_display }}";
+                data_dict['group_id']="{{ host.group_id }}";
+                data_dict['ip']="{{ host.ip }}";
+                data_dict['username']="{{ host.username }}";
+                data_dict['password']="{{ host.password }}"
+            }
+        {% endfor %}
+        parent.window.modify(data_dict)
+
     });
     $('.form-group').submit(function () {
         var a = confirm('是否确认删除')
