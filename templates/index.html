@@ -173,7 +173,13 @@
             })
         });
         function modify(data_dict) {
-            alert(data_dict['id'])
+            $('#hostModifyFormId').find("[name='host_name']").val(data_dict['host_name']);
+            $('#hostModifyFormId').find("option:contains('"+data_dict['state']+"')").attr("selected",true);
+            $('#hostModifyFormId').find("option:contains('"+data_dict['kind']+"')").attr("selected",true);
+            $('#hostModifyFormId').find("option:contains('"+data_dict['group_id']+"')").attr("selected",true);
+            $('#hostModifyFormId').find("[name='ip']").val(data_dict['ip']);
+            $('#hostModifyFormId').find("[name='username']").val(data_dict['username']);
+            $('#hostModifyFormId').find("[name='password']").val(data_dict['password']);
         }
     </script>
 </body>
