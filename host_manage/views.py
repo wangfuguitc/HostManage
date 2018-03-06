@@ -71,6 +71,7 @@ class Host(View):
         except EmptyPage:
             hosts = paginator.page(paginator.num_pages)
         return render(request, 'host.html', {'hosts': hosts})
+
     def post(self, request):
         if request.user.get_role_display() == 'admin':
             if request.POST.get('handle') == 'add':
@@ -80,6 +81,15 @@ class Host(View):
                     obj['group_id'] = models.HostGroup.objects.get(id=obj['group_id'])
                     host_obj = models.Host.objects.create(**obj)
                     request.user.host.add(host_obj)
+                    return HttpResponse('ok')
+                else:
+                    return HttpResponse(host_form.errors.as_json())
+            if request.POST.get('handle') == 'modify':
+                host_form = HostForm(request.POST)
+                if host_form.is_valid():
+                    obj = host_form.cleaned_data
+                    obj['group_id'] = models.HostGroup.objects.get(id=obj['group_id'])
+                    models.Host.objects.filter(id=obj['id']).update(**obj)
                     return HttpResponse('ok')
                 else:
                     return HttpResponse(host_form.errors.as_json())

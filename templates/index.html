@@ -51,41 +51,42 @@
         <div style="background: white; width: 500px;height: 600px;margin:50px 500px">
             <form style="padding: 10px" id="hostModifyFormId">
                 {% csrf_token  %}
+                <input type="hidden"  name="id">
                 <input type="hidden"  name="handle" value="modify" >
                 <div class="form-group">
                     <label style="display: block">主机名</label>
                     {{ host_form.host_name }}
-                    <span id="host_name_id" style="color:red"></span>
+                    <span id="host_name_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">状态</label>
                     {{ host_form.state }}
-                    <span id="state_id" style="color:red"></span>
+                    <span id="state_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">种类</label>
                     {{ host_form.kind }}
-                    <span id="kind_id" style="color:red"></span>
+                    <span id="kind_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">主机组</label>
                     {{ host_form.group_id }}
-                    <span id="group_id_id" style="color:red"></span>
+                    <span id="group_id_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">ip</label>
                     {{ host_form.ip }}
-                    <span id="ip_id" style="color:red"></span>
+                    <span id="ip_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">用户名</label>
                     {{ host_form.username }}
-                    <span id="username_id" style="color:red"></span>
+                    <span id="username_modify_id" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label style="display: block">密码</label>
                     {{ host_form.password }}
-                    <span id="password_id" style="color:red"></span>
+                    <span id="password_modify_id" style="color:red"></span>
                 </div>
                 <button type="submit" class="btn btn-default" id="hostModifyButtonId">修改</button>
                 <button type="reset" class="btn btn-default" style="margin-left: 200px" id="hostModifyHideId">取消</button>
@@ -172,7 +173,45 @@
                 }
             })
         });
+        $('#hostModifyFormId').submit(function(){
+            $(this).find("span").text('');
+            event.preventDefault();
+            $.ajax({
+                url:'/host',
+                type:'POST',
+                data:$('#hostModifyFormId').serialize(),
+                success:function (arg) {
+                    if(arg=='ok'){
+                        alert('修改成功');
+                        location.reload()
+                    }
+                    var error_dict = JSON.parse(arg);
+                    if(error_dict.hasOwnProperty('host_name')){
+                        $('#host_name_modify_id').text(error_dict['host_name'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('state')){
+                       $('#state_modify_id').text(error_dict['state'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('kind')){
+                       $('#kind_modify_id').text(error_dict['kind'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('group_id')){
+                       $('#group_id_modify_id').text(error_dict['group_id'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('ip')){
+                       $('#ip_modify_id').text(error_dict['ip'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('username')){
+                       $('#username_modify_id').text(error_dict['username'][0]['message'])
+                    }
+                    if(error_dict.hasOwnProperty('password')){
+                       $('#password_modify_id').text(error_dict['password'][0]['message'])
+                    }
+                }
+            })
+        });
         function modify(data_dict) {
+            $('#hostModifyFormId').find("[name='id']").val(data_dict['id']);
             $('#hostModifyFormId').find("[name='host_name']").val(data_dict['host_name']);
             $('#hostModifyFormId').find("option:contains('"+data_dict['state']+"')").attr("selected",true);
             $('#hostModifyFormId').find("option:contains('"+data_dict['kind']+"')").attr("selected",true);

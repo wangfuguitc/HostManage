@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 
 
 class HostForm(forms.Form):
+    id = fields.IntegerField(required=False)
     host_name = fields.CharField(widget=widgets.Input(attrs={'class': 'form-control', 'id': False,
                                                              'style': 'width:60%;display:inline'}))
     state = fields.ChoiceField(choices=[(1, '在线'), (2, '下线'), ],
@@ -29,6 +30,9 @@ class HostForm(forms.Form):
         if not obg_host_name:
             return self.cleaned_data['host_name']
         else:
+            if 'id' in self.cleaned_data.keys():
+                if obg_host_name.filter(id=self.cleaned_data['id']):
+                    return self.cleaned_data['host_name']
             raise ValidationError('主机名已存在')
 
     def clean_ip(self):
@@ -36,4 +40,8 @@ class HostForm(forms.Form):
         if not obj_ip:
             return self.cleaned_data['ip']
         else:
+            if 'id' in self.cleaned_data.keys():
+                if obj_ip.filter(id=self.cleaned_data['id']):
+                    return self.cleaned_data['ip']
             raise ValidationError('ip已存在')
+
