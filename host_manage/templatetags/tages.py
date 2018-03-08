@@ -10,9 +10,15 @@ register = template.Library()
 
 
 @register.simple_tag
-def page_ele(page, current_page):
-    if page == current_page:
-        return mark_safe('''<li class="active"><a href="/hosts?page=%s">%s</a></li>''' % (page, page))
-    elif abs(page-current_page) <= 2:
-        return mark_safe('''<li><a href="/hosts?page=%s">%s</a></li>''' % (page, page))
+def page_ele(page, current_page, group):
+    if group:
+        if page == current_page:
+            return mark_safe('''<li class="active"><a href="/hosts?page=%s&group=%s">%s</a></li>''' % (page, group, page))
+        elif abs(page-current_page) <= 2:
+            return mark_safe('''<li><a href="/hosts?page=%s&group=%s">%s</a></li>''' % (page, group, page))
+    else:
+        if page == current_page:
+            return mark_safe('''<li class="active"><a href="/hosts?page=%s">%s</a></li>''' % (page, page))
+        elif abs(page-current_page) <= 2:
+            return mark_safe('''<li><a href="/hosts?page=%s">%s</a></li>''' % (page, page))
     return ''

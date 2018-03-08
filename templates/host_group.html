@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block body %}
+<body>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>主机组</th>
+                    {% ifequal user.get_role_display 'admin' %}
+                        <th><span class="glyphicon glyphicon-plus" aria-hidden="true" style="cursor:pointer" ></span></th>
+                    {% endifequal %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in host_group %}
+                    <tr>
+                        <td><a href="host?group={{ group.id }}">{{ group.name }}</a></td>
+                        {% ifequal user.get_role_display 'admin' %}
+                            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                        {% endifequal %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+{% endblock %}

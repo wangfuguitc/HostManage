@@ -45,3 +45,12 @@ class HostForm(forms.Form):
                     return self.cleaned_data['ip']
             raise ValidationError('ip已存在')
 
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        min_length=5, max_length=32,
+        error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
+    password = forms.CharField(
+        min_length=5, max_length=32,
+        error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
+

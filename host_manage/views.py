@@ -1,23 +1,13 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import redirect, HttpResponse
 from django.views import View
 from django.shortcuts import render
-from django import forms
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from host_manage import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from host_manage.forms import HostForm
+from host_manage.forms import HostForm, LoginForm
 from django.contrib.auth.hashers import make_password, check_password
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        min_length=5, max_length=32,
-        error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
-    password = forms.CharField(
-        min_length=5, max_length=32,
-        error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
 
 
 class Login(View):
@@ -46,9 +36,8 @@ class Login(View):
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class Index(View):
     def get(self, request):
-        hostgroup = models.HostGroup.objects.all()
         host_form = HostForm()
-        return render(request, 'index.html', {'hostgroup': hostgroup, 'host_form': host_form})
+        return render(request, 'index.html', {'host_form': host_form})
 
 
 class Logout(View):
@@ -60,8 +49,11 @@ class Logout(View):
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class Host(View):
     def get(self, request):
-        data = {}
-        contact_list = request.user.host.all().order_by('id')
+        group = request.GET.get('group')
+        if group:
+            contact_list = request.user.host.filter(group_id=group).order_by('id')
+        else:
+            contact_list = request.user.host.all().order_by('id')
         paginator = Paginator(contact_list, 2)
         page = request.GET.get('page', 1)
         try:
@@ -70,7 +62,7 @@ class Host(View):
             hosts = paginator.page(1)
         except EmptyPage:
             hosts = paginator.page(paginator.num_pages)
-        return render(request, 'host.html', {'hosts': hosts})
+        return render(request, 'host.html', {'hosts': hosts, 'group': group})
 
     def post(self, request):
         if request.user.get_role_display() == 'admin':
@@ -100,8 +92,10 @@ class Host(View):
 
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')
-class Hostgroup(View):
-    pass
+class HostGroup(View):
+    def get(self, request):
+        host_group = request.user.host_group.all().order_by('id')
+        return render(request, 'host_group.html', {'host_group': host_group})
 
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')

@@ -45,15 +45,23 @@
     <nav aria-label="Page navigation">
         <ul class="pagination">
             {% if hosts.has_previous %}
-                <li><a href="?page={{ hosts.previous_page_number }}">&laquo;</a></li>
+                {% if group %}
+                    <li><a href="?page={{ hosts.previous_page_number }}&group={{ group }}">&laquo;</a></li>
+                {% else %}
+                    <li><a href="?page={{ hosts.previous_page_number }}">&laquo;</a></li>
+                {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
             {% for page in hosts.paginator.page_range %}
-                {% page_ele page hosts.number %}
+                {% page_ele page hosts.number group %}
             {% endfor %}
             {% if hosts.has_next %}
-                <li><a href="?page={{ hosts.next_page_number }}">&raquo;</a></li>
+                {% if group %}
+                    <li><a href="?page={{ hosts.next_page_number }}&group={{ group }}">&raquo;</a></li>
+                {% else %}
+                    <li><a href="?page={{ hosts.next_page_number }}">&raquo;</a></li>
+                {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}
