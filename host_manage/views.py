@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from host_manage import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from host_manage.forms import HostForm, LoginForm
+from host_manage.forms import HostForm, LoginForm, HostGroupForm
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -96,7 +96,23 @@ class HostGroup(View):
     def get(self, request):
         host_group = request.user.host_group.all().order_by('id')
         return render(request, 'host_group.html', {'host_group': host_group})
-
+    def post(self, request):
+        if request.user.get_role_display() == 'admin':
+            if request.POST.get('handle') == 'delete':
+                models.HostGroup.objects.filter(name=request.POST.get('name')).delete()
+                return redirect('/host_group')
+            if request.POST.get('handle') == 'modify':
+                return redirect('/index')
+            if request.POST.get('handle') == 'add':
+                host_group_form = HostGroupForm(request.POST)
+                if host_group_form.is_valid():
+                    obj = host_group_form.cleaned_data
+                    host_group_obj = models.HostGroup.objects.create(**obj)
+                    request.user.host_group.add(host_group_obj)
+                    return HttpResponse('添加成功')
+                else:
+                    return HttpResponse(host_group_form.errors['name'])
+        return redirect('/index')
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class User(View):

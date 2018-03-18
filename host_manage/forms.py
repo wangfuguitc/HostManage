@@ -26,12 +26,12 @@ class HostForm(forms.Form):
                                                                     'style': 'width:60%;display:inline'}))
 
     def clean_host_name(self):
-        obg_host_name = models.Host.objects.filter(host_name=self.cleaned_data['host_name'])
-        if not obg_host_name:
+        obj_host_name = models.Host.objects.filter(host_name=self.cleaned_data['host_name'])
+        if not obj_host_name:
             return self.cleaned_data['host_name']
         else:
             if 'id' in self.cleaned_data.keys():
-                if obg_host_name.filter(id=self.cleaned_data['id']):
+                if obj_host_name.filter(id=self.cleaned_data['id']):
                     return self.cleaned_data['host_name']
             raise ValidationError('主机名已存在')
 
@@ -54,3 +54,19 @@ class LoginForm(forms.Form):
         min_length=5, max_length=32,
         error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
 
+
+class HostGroupForm(forms.Form):
+    id = fields.IntegerField(required=False)
+    name = forms.CharField(
+        max_length=32,
+        error_messages={'required': '不能为空', 'max_length': '不能大于32位'})
+
+    def clean_name(self):
+        obj_name = models.HostGroup.objects.filter(name=self.cleaned_data['name'])
+        if not obj_name:
+            return self.cleaned_data['name']
+        else:
+            if 'id' in self.cleaned_data.keys():
+                if obj_name.filter(id=self.cleaned_data['id']):
+                    return self.cleaned_data['name']
+            raise ValidationError('组名已存在')

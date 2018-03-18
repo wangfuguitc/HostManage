@@ -12,11 +12,28 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <form method="post" action="host_group.html" class="form-group" >
+                        {% csrf_token %}
+                        <input name="handle" value="add" type="hidden">
+                        <td style="display:none" id="hostGroupAddId">
+                            <input type="text" required="required" name="name">
+                            <button type="submit">确定</button>
+                            <button type="reset" id="hostGroupAddCancelId">取消</button>
+                        </td>
+                    </form>
+                </tr>
                 {% for group in host_group %}
                     <tr>
                         <td><a href="host?group={{ group.id }}">{{ group.name }}</a></td>
                         {% ifequal user.get_role_display 'admin' %}
-                            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="cursor:pointer"></span></td>
+                            <form method="post" action="host_group.html" class="form-group" id="deleteId">
+                                {% csrf_token %}
+                                <input name="handle" value="delete" type="hidden">
+                                <input name="name" value="{{ group.name }}" type="hidden">
+                                <td><button type="submit" style="border: none;background-color:transparent;outline: none"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></button></td>
+                            </form>
                         {% endifequal %}
                     </tr>
                 {% endfor %}
@@ -25,5 +42,22 @@
     </div>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $('form#deleteId').submit(function () {
+            var a = confirm('是否确认删除')
+            if(a==true){
+                return
+            }
+            else {
+                event.preventDefault();
+            }
+        });
+        $('.glyphicon-plus').click(function(){
+            $('#hostGroupAddId').attr("style","display:dislpay");
+        });
+        $('#hostGroupAddCancelId').click(function(){
+            $('#hostGroupAddId').attr("style","display:none");
+        });
+    </script>
 </body>
 {% endblock %}
