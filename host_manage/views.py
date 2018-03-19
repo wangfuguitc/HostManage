@@ -102,7 +102,13 @@ class HostGroup(View):
                 models.HostGroup.objects.filter(name=request.POST.get('name')).delete()
                 return redirect('/host_group')
             if request.POST.get('handle') == 'modify':
-                return redirect('/index')
+                host_group_form = HostGroupForm(request.POST)
+                if host_group_form.is_valid():
+                    obj = host_group_form.cleaned_data
+                    models.HostGroup.objects.filter(id=obj['id']).update(**obj)
+                    return HttpResponse('修改成功')
+                else:
+                    return HttpResponse(host_group_form.errors['name'])
             if request.POST.get('handle') == 'add':
                 host_group_form = HostGroupForm(request.POST)
                 if host_group_form.is_valid():

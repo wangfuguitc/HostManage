@@ -12,18 +12,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr style="display:none" id="hostGroupAddId">
                     <form method="post" action="host_group.html" class="form-group" >
                         {% csrf_token %}
                         <input name="handle" value="add" type="hidden">
-                        <td style="display:none" id="hostGroupAddId">
-                            <input type="text" required="required" name="name">
-                            <button type="submit">确定</button>
-                            <button type="reset" id="hostGroupAddCancelId">取消</button>
-                        </td>
+                        <td><input type="text" required="required" name="name"></td>
+                        <td><button type="submit">确定</button></td>
+                        <td><button type="reset" id="hostGroupAddCancelId">取消</button></td>
                     </form>
                 </tr>
                 {% for group in host_group %}
+                    <tr style="display:none" id="hostGroupModifyId">
+                        <form method="post" action="host_group.html" class="form-group" >
+                            {% csrf_token %}
+                            <input name="handle" value="modify" type="hidden">
+                            <input name="id" value="{{ group.id }}" type="hidden">
+                            <td><input type="text" required="required" name="name" value="{{ group.name }}"></td>
+                            <td><button type="submit">确定</button></td>
+                            <td><button type="reset" buttonId="hostGroupModifyCancelId">取消</button></td>
+                        </form>
+                    </tr>
                     <tr>
                         <td><a href="host?group={{ group.id }}">{{ group.name }}</a></td>
                         {% ifequal user.get_role_display 'admin' %}
@@ -53,10 +61,18 @@
             }
         });
         $('.glyphicon-plus').click(function(){
-            $('#hostGroupAddId').attr("style","display:dislpay");
+            $('#hostGroupAddId').attr("style","display:display");
+        });
+        $('.glyphicon-pencil').click(function(){
+            $(this).parent().parent().attr("style","display:none");
+            $(this).parent().parent().prev().attr("style","display:display");
         });
         $('#hostGroupAddCancelId').click(function(){
             $('#hostGroupAddId').attr("style","display:none");
+        });
+        $('[buttonId=hostGroupModifyCancelId]').click(function(){
+            $(this).parent().parent().attr("style","display:none");
+            $(this).parent().parent().next().attr("style","display:display");
         });
     </script>
 </body>
