@@ -100,13 +100,13 @@ class HostGroup(View):
         if request.user.get_role_display() == 'admin':
             if request.POST.get('handle') == 'delete':
                 models.HostGroup.objects.filter(name=request.POST.get('name')).delete()
-                return redirect('/host_group')
+                return HttpResponse('ok')
             if request.POST.get('handle') == 'modify':
                 host_group_form = HostGroupForm(request.POST)
                 if host_group_form.is_valid():
                     obj = host_group_form.cleaned_data
                     models.HostGroup.objects.filter(id=obj['id']).update(**obj)
-                    return HttpResponse('修改成功')
+                    return HttpResponse('ok')
                 else:
                     return HttpResponse(host_group_form.errors['name'])
             if request.POST.get('handle') == 'add':
@@ -115,7 +115,7 @@ class HostGroup(View):
                     obj = host_group_form.cleaned_data
                     host_group_obj = models.HostGroup.objects.create(**obj)
                     request.user.host_group.add(host_group_obj)
-                    return HttpResponse('添加成功')
+                    return HttpResponse('ok')
                 else:
                     return HttpResponse(host_group_form.errors['name'])
         return redirect('/index')

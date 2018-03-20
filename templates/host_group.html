@@ -51,15 +51,6 @@
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script>
-        $('form#deleteId').submit(function () {
-            var a = confirm('是否确认删除')
-            if(a==true){
-                return
-            }
-            else {
-                event.preventDefault();
-            }
-        });
         $('.glyphicon-plus').click(function(){
             $('#hostGroupAddId').attr("style","display:display");
         });
@@ -74,6 +65,29 @@
             $(this).parent().parent().attr("style","display:none");
             $(this).parent().parent().next().attr("style","display:display");
         });
+        $('form').submit(function(){
+            if($(this).attr("id")=='deleteId'){
+                var a = confirm('是否确认删除');
+                if(a!=true){
+                    event.preventDefault();
+                    return
+                }
+            }
+            event.preventDefault();
+            $.ajax({
+                url: '/host_group',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (arg) {
+                    if (arg=='ok') {
+                        parent.location.reload();
+                    }
+                    else {
+                        alert(arg)
+                    }
+                }
+            })
+        })
     </script>
 </body>
 {% endblock %}

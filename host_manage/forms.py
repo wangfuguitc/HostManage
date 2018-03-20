@@ -15,8 +15,7 @@ class HostForm(forms.Form):
     kind = fields.ChoiceField(choices=[(1, '服务器'), (2, '防火墙'), (3, '路由器'), (4, '交换机'), ],
                               widget=widgets.Select(attrs={'class': 'form-control', 'id': False,
                                                            'style': 'width:60%;display:inline'}))
-    group_id = fields.ChoiceField(choices=models.HostGroup.objects.values_list('id', 'name'),
-                                  widget=widgets.Select(attrs={'class': 'form-control', 'id': False,
+    group_id = fields.ChoiceField(widget=widgets.Select(attrs={'class': 'form-control', 'id': False,
                                                                'style': 'width:60%;display:inline'}))
     ip = fields.GenericIPAddressField(widget=widgets.Input(attrs={'class': 'form-control', 'id': False,
                                                                   'style': 'width:60%;display:inline'}))
@@ -44,6 +43,11 @@ class HostForm(forms.Form):
                 if obj_ip.filter(id=self.cleaned_data['id']):
                     return self.cleaned_data['ip']
             raise ValidationError('ip已存在')
+
+    '''forms生成html元素时重新获取主机组，新加的主机组能够在不重启服务的情况下显示在select标签里'''
+    def __init__(self, *args, **kwargs):
+        super(HostForm, self).__init__(*args, **kwargs)
+        self.fields['group_id'].choices = models.HostGroup.objects.values_list('id', 'name')
 
 
 class LoginForm(forms.Form):
