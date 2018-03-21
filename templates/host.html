@@ -19,6 +19,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- 显示主机信息 -->
                 {% for host in hosts %}
                     <tr>
                         <td>{{ host.host_name }}</td>
@@ -44,6 +45,7 @@
     </div>
     <nav aria-label="Page navigation">
         <ul class="pagination">
+            <!-- 翻页 -->
             {% if hosts.has_previous %}
                 {% if group %}
                     <li><a href="?page={{ hosts.previous_page_number }}&group={{ group }}">&laquo;</a></li>
@@ -71,10 +73,12 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script>
     $('.glyphicon-plus').click(function(){
+        <!-- 显示添加主机的form表单和遮罩层 -->
         $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
         $(window.top.document.getElementById('hostAddId')).attr("style","position: fixed;display:dislpay;z-index:2");
     });
     $('.glyphicon-pencil').click(function(){
+        <!-- 显示修改主机的form表单和遮罩层 -->
         $(window.top.document.getElementById('backdropId')).attr("style","display:dislpay;z-index:1");
         $(window.top.document.getElementById('hostModifyId')).attr("style","position: fixed;display:dislpay;z-index:2");
         var data_dict={};
@@ -90,6 +94,7 @@
                 data_dict['password']="{{ host.password }}"
             }
         {% endfor %}
+        <!-- 调用父元素的js -->
         parent.window.modify(data_dict)
 
     });

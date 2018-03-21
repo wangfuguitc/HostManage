@@ -52,20 +52,25 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script>
         $('.glyphicon-plus').click(function(){
+            <!-- 显示添加主机组的form表单 -->
             $('#hostGroupAddId').attr("style","display:display");
         });
         $('.glyphicon-pencil').click(function(){
+            <!-- 隐藏主机组信息，显示修改主机组的form表单 -->
             $(this).parent().parent().attr("style","display:none");
             $(this).parent().parent().prev().attr("style","display:display");
         });
         $('#hostGroupAddCancelId').click(function(){
+            <!-- 隐藏添加主机组的form表单 -->
             $('#hostGroupAddId').attr("style","display:none");
         });
         $('[buttonId=hostGroupModifyCancelId]').click(function(){
+            <!-- 隐藏修改主机组的form表单，显示主机组信息 -->
             $(this).parent().parent().attr("style","display:none");
             $(this).parent().parent().next().attr("style","display:display");
         });
         $('form').submit(function(){
+            <!-- 判断是不是删除操作 -->
             if($(this).attr("id")=='deleteId'){
                 var a = confirm('是否确认删除');
                 if(a!=true){
@@ -73,6 +78,7 @@
                     return
                 }
             }
+            <!-- 通过ajax提交表单 -->
             event.preventDefault();
             $.ajax({
                 url: '/host_group',
@@ -80,6 +86,7 @@
                 data: $(this).serialize(),
                 success: function (arg) {
                     if (arg=='ok') {
+                        <!-- 添加或修改主机组后需要刷新页面 -->
                         parent.location.reload();
                     }
                     else {

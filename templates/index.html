@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block body %}
 <body>
+    <!-- 遮罩层 -->
     <div id="backdropId" class="modal-backdrop fade in" style="display:none"></div>
+    <!-- 添加主机的form表单 -->
     <div id="hostAddId" style="display:none">
         <div style="background: white; width: 500px;height: 600px;margin:50px 500px">
             <form style="padding: 10px" id="hostAddFormId">
@@ -47,6 +49,7 @@
             </form>
         </div>
     </div>
+    <!-- 修改主机的form表单 -->
     <div id="hostModifyId" style="display:none">
         <div style="background: white; width: 500px;height: 600px;margin:50px 500px">
             <form style="padding: 10px" id="hostModifyFormId">
@@ -95,6 +98,7 @@
     </div>
     <nav class="navbar navbar-inverse" style="margin: 0">
         <p class="navbar-brand" >HostManage</p>
+        <!-- 注销 -->
         <div class="navbar-brand btn-group " style="margin-right:50px;float: right" >
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" >
                 {{ request.user.username }}
@@ -121,11 +125,13 @@
     <script type="text/javascript">
         $('.dropdown-toggle').dropdown();
         $('#hostAddHideId').click(function(){
+            <!-- 隐藏添加主机的form表单 -->
             $(this).siblings().find("span").text('');
             $('#backdropId').attr("style","display:none");
             $('#hostAddId').attr("style","display:none")
         });
         $('#hostModifyHideId').click(function(){
+            <!-- 隐藏修改主机的form表单 -->
             $(this).siblings().find("span").text('');
             $('#backdropId').attr("style","display:none");
             $('#hostModifyId').attr("style","display:none")
@@ -138,6 +144,7 @@
         });
         $('#hostAddFormId').submit(function(){
             $(this).find("span").text('');
+            <!-- 通过ajax提交添加主机的form表单 -->
             event.preventDefault();
             $.ajax({
                 url:'/host',
@@ -145,9 +152,11 @@
                 data:$('#hostAddFormId').serialize(),
                 success:function (arg) {
                     if(arg=='ok'){
+                        <!-- 提示修改成功，刷新页面 -->
                         alert('添加成功');
                         return
                     }
+                    <!-- 显示错误信息 -->
                     var error_dict = JSON.parse(arg);
                     if(error_dict.hasOwnProperty('host_name')){
                         $('#host_name_id').text(error_dict['host_name'][0]['message'])
@@ -175,6 +184,7 @@
         });
         $('#hostModifyFormId').submit(function(){
             $(this).find("span").text('');
+            <!-- 通过ajax提交修改主机的form表单 -->
             event.preventDefault();
             $.ajax({
                 url:'/host',
@@ -182,9 +192,11 @@
                 data:$('#hostModifyFormId').serialize(),
                 success:function (arg) {
                     if(arg=='ok'){
+                        <!-- 提示修改成功，刷新页面 -->
                         alert('修改成功');
                         location.reload()
                     }
+                    <!-- 显示错误信息 -->
                     var error_dict = JSON.parse(arg);
                     if(error_dict.hasOwnProperty('host_name')){
                         $('#host_name_modify_id').text(error_dict['host_name'][0]['message'])
@@ -211,6 +223,7 @@
             })
         });
         function modify(data_dict) {
+            <!-- 获取主机信息，并显示在form表单里 -->
             $('#hostModifyFormId').find("[name='id']").val(data_dict['id']);
             $('#hostModifyFormId').find("[name='host_name']").val(data_dict['host_name']);
             $('#hostModifyFormId').find("option:contains('"+data_dict['state']+"')").attr("selected",true);

@@ -9,8 +9,10 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
+# 分页显示主机
 @register.simple_tag
 def page_ele(page, current_page, group):
+    # 判断是否通过主机组过滤主机
     if group:
         if page == current_page:
             return mark_safe('''<li class="active"><a href="/hosts?page=%s&group=%s">%s</a></li>''' % (page, group, page))

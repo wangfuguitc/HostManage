@@ -24,6 +24,7 @@ class HostForm(forms.Form):
     password = fields.CharField(widget=widgets.PasswordInput(attrs={'class': 'form-control', 'id': False,
                                                                     'style': 'width:60%;display:inline'}))
 
+    # 判断主机名是否重复
     def clean_host_name(self):
         obj_host_name = models.Host.objects.filter(host_name=self.cleaned_data['host_name'])
         if not obj_host_name:
@@ -34,6 +35,7 @@ class HostForm(forms.Form):
                     return self.cleaned_data['host_name']
             raise ValidationError('主机名已存在')
 
+    # 判断ip是否重复
     def clean_ip(self):
         obj_ip = models.Host.objects.filter(ip=self.cleaned_data['ip'])
         if not obj_ip:
@@ -44,7 +46,7 @@ class HostForm(forms.Form):
                     return self.cleaned_data['ip']
             raise ValidationError('ip已存在')
 
-    '''forms生成html元素时重新获取主机组，新加的主机组能够在不重启服务的情况下显示在select标签里'''
+    # forms生成html元素时重新获取主机组，新加的主机组能够在不重启服务的情况下显示在select标签里
     def __init__(self, *args, **kwargs):
         super(HostForm, self).__init__(*args, **kwargs)
         self.fields['group_id'].choices = models.HostGroup.objects.values_list('id', 'name')
@@ -65,6 +67,7 @@ class HostGroupForm(forms.Form):
         max_length=32,
         error_messages={'required': '不能为空', 'max_length': '不能大于32位'})
 
+    # 判断主机组名是否重复
     def clean_name(self):
         obj_name = models.HostGroup.objects.filter(name=self.cleaned_data['name'])
         if not obj_name:

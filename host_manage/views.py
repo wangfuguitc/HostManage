@@ -20,10 +20,12 @@ class Login(View):
     def post(self, request):
         fm = LoginForm(request.POST)
         error = {}
+        # 判断用户名密码格式是否正确
         if fm.is_valid():
             _username = request.POST.get('username')
             _password = request.POST.get('password')
             user = authenticate(username=_username, password=_password)
+            # 验证用户名密码是否通过
             if user:
                 login(request, user)
                 return redirect(Login.next_url)
@@ -50,10 +52,12 @@ class Logout(View):
 class Host(View):
     def get(self, request):
         group = request.GET.get('group')
+        # 判断是否要通过主机组过滤主机
         if group:
             contact_list = request.user.host.filter(group_id=group).order_by('id')
         else:
             contact_list = request.user.host.all().order_by('id')
+        # 分页显示主机
         paginator = Paginator(contact_list, 2)
         page = request.GET.get('page', 1)
         try:
@@ -65,17 +69,22 @@ class Host(View):
         return render(request, 'host.html', {'hosts': hosts, 'group': group})
 
     def post(self, request):
+        # 判断用户是否有管理员权限
         if request.user.get_role_display() == 'admin':
+            # 添加主机的操作
             if request.POST.get('handle') == 'add':
                 host_form = HostForm(request.POST)
                 if host_form.is_valid():
                     obj = host_form.cleaned_data
                     obj['group_id'] = models.HostGroup.objects.get(id=obj['group_id'])
                     host_obj = models.Host.objects.create(**obj)
+                    # 用户和主机添加关联
                     request.user.host.add(host_obj)
                     return HttpResponse('ok')
                 else:
+                    # 添加失败，返回错误信息
                     return HttpResponse(host_form.errors.as_json())
+            # 修改主机的操作
             if request.POST.get('handle') == 'modify':
                 host_form = HostForm(request.POST)
                 if host_form.is_valid():
@@ -85,6 +94,7 @@ class Host(View):
                     return HttpResponse('ok')
                 else:
                     return HttpResponse(host_form.errors.as_json())
+            # 删除主机的操作
             if request.POST.get('handle') == 'delete':
                 models.Host.objects.filter(host_name=request.POST.get('host_name')).delete()
                 return redirect('/host')
@@ -97,10 +107,13 @@ class HostGroup(View):
         host_group = request.user.host_group.all().order_by('id')
         return render(request, 'host_group.html', {'host_group': host_group})
     def post(self, request):
+        # 判断用户是否有管理员权限
         if request.user.get_role_display() == 'admin':
+            # 删除操作
             if request.POST.get('handle') == 'delete':
                 models.HostGroup.objects.filter(name=request.POST.get('name')).delete()
                 return HttpResponse('ok')
+            # 修改操作
             if request.POST.get('handle') == 'modify':
                 host_group_form = HostGroupForm(request.POST)
                 if host_group_form.is_valid():
@@ -109,11 +122,13 @@ class HostGroup(View):
                     return HttpResponse('ok')
                 else:
                     return HttpResponse(host_group_form.errors['name'])
+            # 添加操作
             if request.POST.get('handle') == 'add':
                 host_group_form = HostGroupForm(request.POST)
                 if host_group_form.is_valid():
                     obj = host_group_form.cleaned_data
                     host_group_obj = models.HostGroup.objects.create(**obj)
+                    # 用户和主机组添加关联
                     request.user.host_group.add(host_group_obj)
                     return HttpResponse('ok')
                 else:
