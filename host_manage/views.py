@@ -106,6 +106,7 @@ class HostGroup(View):
     def get(self, request):
         host_group = request.user.host_group.all().order_by('id')
         return render(request, 'host_group.html', {'host_group': host_group})
+
     def post(self, request):
         # 判断用户是否有管理员权限
         if request.user.get_role_display() == 'admin':
@@ -137,4 +138,17 @@ class HostGroup(View):
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class User(View):
-    pass
+    def get(self, request):
+        # 判断是否有管理员权限
+        user_id = request.GET.get('id')
+        if request.user.get_role_display() == 'admin':
+            if user_id:
+                host_list = models.Host.objects.all()
+                group_list = models.HostGroup.objects.all()
+                return render(request, 'user_detail.html', {'host_list': host_list, 'group_list': group_list})
+            else:
+                user_list = models.User.objects.all()
+                return render(request, 'user.html', {'user_list': user_list})
+
+    def post(self, request):
+        pass

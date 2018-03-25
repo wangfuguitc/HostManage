@@ -1,6 +1,28 @@
 {% extends 'base.html' %}
 {% block body %}
 <body>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>账号</th>
+                    <th>姓名</th>
+                    <th>权限</th>
+                    <th><span class="glyphicon glyphicon-plus" aria-hidden="true" style="cursor:pointer" ></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in user_list %}
+                    <tr>
+                        <td><a href="user?id={{ user.id }}">{{ user.username }}</a></td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.get_role_display }}</td>
+                        <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
 </body>
