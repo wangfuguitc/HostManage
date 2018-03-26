@@ -3,10 +3,20 @@
     <body>
     <form class="form-horizontal" action="user" method="post">
         {% csrf_token %}
+        {% ifequal user_id 'new' %}
+            <input type="hidden"  name="handle" value="add" >
+        {% else %}
+            <input type="hidden"  name="handle" value="modify" >
+            <input type="hidden"  name="id" value="{{ user_id }}" >
+        {% endifequal %}
         <div class="form-group" style="width: 50%">
             <label class="col-sm-2 control-label">username</label>
             <div class="col-sm-10">
-                <input class="form-control" placeholder="username" name="username">
+                {% ifequal user_id 'new' %}
+                    <input class="form-control" placeholder="username" name="username">
+                {% else %}
+                    <input class="form-control" placeholder="{{ username }}" name="username" disabled>
+                {% endifequal %}
             </div>
         </div>
         <div class="form-group" style="width: 50%">
@@ -25,8 +35,8 @@
             <label class="col-sm-2 control-label">role</label>
             <div class="col-sm-10">
                 <select class="form-control" name="role">
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
+                    <option value="1">admin</option>
+                    <option value="2">user</option>
                 </select>
             </div>
         </div>
@@ -35,7 +45,7 @@
             <div class="col-sm-10">
                 <select multiple class="form-control" name="host">
                     {% for host in host_list %}
-                        <option value="{{ host }}">{{ host }}</option>
+                        <option value="{{ host.id }}">{{ host }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -45,7 +55,7 @@
             <div class="col-sm-10">
                 <select multiple class="form-control" name="host_group">
                     {% for group in group_list %}
-                        <option value="{{ group }}">{{ group }}</option>
+                        <option value="{{ group.id }}">{{ group }}</option>
                     {% endfor %}
                 </select>
             </div>

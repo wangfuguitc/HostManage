@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from host_manage import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from host_manage.forms import HostForm, LoginForm, HostGroupForm
+from host_manage.forms import HostForm, LoginForm, HostGroupForm, UserForm
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -98,7 +98,7 @@ class Host(View):
             if request.POST.get('handle') == 'delete':
                 models.Host.objects.filter(host_name=request.POST.get('host_name')).delete()
                 return redirect('/host')
-        return redirect('/index')
+        return redirect('/host')
 
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')
@@ -134,7 +134,7 @@ class HostGroup(View):
                     return HttpResponse('ok')
                 else:
                     return HttpResponse(host_group_form.errors['name'])
-        return redirect('/index')
+        return redirect('/host_group')
 
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class User(View):
@@ -143,12 +143,28 @@ class User(View):
         user_id = request.GET.get('id')
         if request.user.get_role_display() == 'admin':
             if user_id:
+                if user_id == 'new':
+                    user_name = 'username'
+                else:
+                    user_name = models.User.objects.filter(id=user_id).values('username').first()['username']
                 host_list = models.Host.objects.all()
                 group_list = models.HostGroup.objects.all()
-                return render(request, 'user_detail.html', {'host_list': host_list, 'group_list': group_list})
+                return render(request, 'user_detail.html',
+                              {'host_list': host_list,
+                               'group_list': group_list, 'user_id': user_id, 'username': user_name})
             else:
                 user_list = models.User.objects.all()
                 return render(request, 'user.html', {'user_list': user_list})
 
     def post(self, request):
-        pass
+        # 判断用户是否有管理员权限
+        if request.user.get_role_display() == 'admin':
+            user_form = UserForm(request.POST)
+            if user_form.is_valid():
+                if request.POST.get('handle') == 'add':
+                    pass
+                if request.POST.get('handle') == 'modify':
+                    pass
+                if request.POST.get('handle') == 'delete':
+                    pass
+        return redirect('/user')
