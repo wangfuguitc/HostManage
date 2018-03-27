@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from host_manage import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from host_manage.forms import HostForm, LoginForm, HostGroupForm, UserForm
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password
 
 
 class Login(View):
@@ -162,9 +162,14 @@ class User(View):
             user_form = UserForm(request.POST)
             if user_form.is_valid():
                 if request.POST.get('handle') == 'add':
-                    pass
+                    obj = user_form.cleaned_data
+                    obj['password'] = make_password(obj['password'])
+                    models.User.objects.create(**obj)
+                    return HttpResponse('ok')
                 if request.POST.get('handle') == 'modify':
                     pass
                 if request.POST.get('handle') == 'delete':
                     pass
+            else:
+                return HttpResponse(str(user_form.errors))
         return redirect('/user')
