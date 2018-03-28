@@ -106,16 +106,13 @@ class UserForm(forms.Form):
     def clean(self):
         # 防止修改用户名
         if self.cleaned_data['id']:
-            if models.User.objects.filter(id=self.cleaned_data['id']).filter(username=self.cleaned_data['username']):
-                return self.cleaned_data
-            else:
+            if not models.User.objects.filter(id=self.cleaned_data['id']).filter(username=self.cleaned_data['username']):
                 ValidationError('用户名不能修改')
         # 如果主机和组机组为空时，把key从字典中去掉
         if not self.cleaned_data['host']:
             self.cleaned_data.pop('host')
         if not self.cleaned_data['host_group']:
             self.cleaned_data.pop('host_group')
-
 
     # 不重启服务的情况下获取到最新的主机和主机组列表
     def __init__(self, *args, **kwargs):

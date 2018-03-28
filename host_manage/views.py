@@ -161,13 +161,31 @@ class User(View):
         if request.user.get_role_display() == 'admin':
             user_form = UserForm(request.POST)
             if user_form.is_valid():
+                # 添加操作
                 if request.POST.get('handle') == 'add':
                     obj = user_form.cleaned_data
                     obj['password'] = make_password(obj['password'])
-                    models.User.objects.create(**obj)
+                    obj_host = []
+                    obj_host_group = []
+                    if 'host' in obj.keys():
+                        obj_host = models.Host.objects.filter(id__in=obj['host'])
+                        obj.pop('host')
+                    if 'host_group' in obj.keys():
+                        obj_host_group = models.HostGroup.objects.filter(id__in=obj['host_group'])
+                        obj.pop('host_group')
+                    # 添加用户
+                    obj_user = models.User.objects.create(**obj)
+                    # 给用户添加主机
+                    if obj_host:
+                        obj_user.host.set(obj_host)
+                    # 给用户添加主机组
+                    if obj_host_group:
+                        obj_user.host_group.set(obj_host_group)
                     return HttpResponse('ok')
+                # 修改操作
                 if request.POST.get('handle') == 'modify':
                     pass
+                # 删除操作
                 if request.POST.get('handle') == 'delete':
                     pass
             else:
