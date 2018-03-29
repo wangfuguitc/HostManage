@@ -136,6 +136,7 @@ class HostGroup(View):
                     return HttpResponse(host_group_form.errors['name'])
         return redirect('/host_group')
 
+
 @method_decorator(login_required(login_url='/login'), 'dispatch')
 class User(View):
     def get(self, request):
@@ -144,14 +145,14 @@ class User(View):
         if request.user.get_role_display() == 'admin':
             if user_id:
                 if user_id == 'new':
-                    user_name = 'username'
+                    user_data = None
                 else:
-                    user_name = models.User.objects.filter(id=user_id).values('username').first()['username']
+                    user_data = models.User.objects.get(id=user_id)
                 host_list = models.Host.objects.all()
                 group_list = models.HostGroup.objects.all()
                 return render(request, 'user_detail.html',
                               {'host_list': host_list,
-                               'group_list': group_list, 'user_id': user_id, 'username': user_name})
+                               'group_list': group_list, 'user_id': user_id, 'user_data': user_data})
             else:
                 user_list = models.User.objects.all()
                 return render(request, 'user.html', {'user_list': user_list})
@@ -184,7 +185,24 @@ class User(View):
                     return HttpResponse('ok')
                 # 修改操作
                 if request.POST.get('handle') == 'modify':
-                    pass
+                    obj = user_form.cleaned_data
+                    obj['password'] = make_password(obj['password'])
+                    obj_host = []
+                    obj_host_group = []
+                    if 'host' in obj.keys():
+                        obj_host = models.Host.objects.filter(id__in=obj['host'])
+                        obj.pop('host')
+                    if 'host_group' in obj.keys():
+                        obj_host_group = models.HostGroup.objects.filter(id__in=obj['host_group'])
+                        obj.pop('host_group')
+                    obj_user = models.User.objects.filter(id=obj['id'])
+                    obj_user.update(**obj)
+                    # 给用户添加主机
+                    if obj_host:
+                        obj_user.first().host.set(obj_host)
+                    # 给用户添加主机组
+                    if obj_host_group:
+                        obj_user.first().host_group.set(obj_host_group)
                 # 删除操作
                 if request.POST.get('handle') == 'delete':
                     pass

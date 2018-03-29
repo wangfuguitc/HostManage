@@ -82,10 +82,10 @@ class HostGroupForm(forms.Form):
 class UserForm(forms.Form):
     id = fields.IntegerField(required=False)
     username = forms.CharField(
-        min_length=5, max_length=32,
+        min_length=5, max_length=32, required=False,
         error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
     password = forms.CharField(
-        min_length=5, max_length=32,
+        min_length=5, max_length=32, required=False,
         error_messages={'required': '不能为空', 'max_length': '不能大于32位', 'min_length': '不能小于5位'})
     name = forms.CharField()
     role = fields.ChoiceField(choices=[(1, 'admin'), (2, 'user'), ])
@@ -106,8 +106,16 @@ class UserForm(forms.Form):
     def clean(self):
         # 防止修改用户名
         if self.cleaned_data['id']:
-            if not models.User.objects.filter(id=self.cleaned_data['id']).filter(username=self.cleaned_data['username']):
-                ValidationError('用户名不能修改')
+            if self.cleaned_data['username']:
+                raise ValidationError('用户名不能修改')
+            else:
+                self.cleaned_data['username'] = models.User.objects.get(id=self.cleaned_data['id']).username
+        else:
+            # 新添加用户时，用户名密码不能为空，修改用户时可以不修改密码
+            if not self.cleaned_data['username']:
+                raise ValidationError('用户名不能为空')
+            if not self.cleaned_data['password']:
+                raise ValidationError('密码不能为空')
         # 如果主机和组机组为空时，把key从字典中去掉
         if not self.cleaned_data['host']:
             self.cleaned_data.pop('host')

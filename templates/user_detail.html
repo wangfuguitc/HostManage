@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tages %}
 {% block body %}
     <body>
     <form class="form-horizontal" action="user" method="post">
@@ -15,28 +16,42 @@
                 {% ifequal user_id 'new' %}
                     <input class="form-control" placeholder="username" name="username">
                 {% else %}
-                    <input class="form-control" placeholder="{{ username }}" name="username" disabled>
+                    <input class="form-control" placeholder="{{ user_data.username }}" name="username" disabled>
                 {% endifequal %}
             </div>
         </div>
         <div class="form-group" style="width: 50%">
             <label class="col-sm-2 control-label">password</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control"placeholder="password" name="password">
+                <input type="password" class="form-control" placeholder="password" name="password">
             </div>
         </div>
         <div class="form-group" style="width: 50%">
             <label class="col-sm-2 control-label">name</label>
             <div class="col-sm-10">
-                <input class="form-control"placeholder="name" name="name">
+                {% ifequal user_id 'new' %}
+                    <input class="form-control" placeholder="name" name="name">
+                {% else %}
+                    <input class="form-control" value="{{ user_data.name }}" name="name">
+                {% endifequal %}
             </div>
         </div>
         <div class="form-group" style="width: 50%">
             <label class="col-sm-2 control-label">role</label>
             <div class="col-sm-10">
                 <select class="form-control" name="role">
-                    <option value="1">admin</option>
-                    <option value="2">user</option>
+                    {% ifequal user_id 'new' %}
+                        <option value="1">admin</option>
+                        <option value="2">user</option>
+                    {% else %}
+                        {% ifequal user_data.role 1 %}
+                            <option value="1" selected="selected">admin</option>
+                            <option value="2">user</option>
+                        {% else %}
+                            <option value="1">admin</option>
+                            <option value="2" selected="selected">user</option>
+                        {% endifequal %}
+                    {% endifequal %}
                 </select>
             </div>
         </div>
@@ -45,7 +60,11 @@
             <div class="col-sm-10">
                 <select multiple class="form-control" name="host">
                     {% for host in host_list %}
-                        <option value="{{ host.id }}">{{ host }}</option>
+                        {% ifequal user_id 'new' %}
+                            <option value="{{ host.id }}">{{ host }}</option>
+                        {% else %}
+                            {% host_ele user_data.host host.id host %}
+                        {% endifequal %}
                     {% endfor %}
                 </select>
             </div>
@@ -55,7 +74,11 @@
             <div class="col-sm-10">
                 <select multiple class="form-control" name="host_group">
                     {% for group in group_list %}
-                        <option value="{{ group.id }}">{{ group }}</option>
+                        {% ifequal user_id 'new' %}
+                            <option value="{{ group.id }}">{{ group }}</option>
+                        {% else %}
+                            {% host_group_ele user_data.host_group group.id group %}
+                        {% endifequal %}
                     {% endfor %}
                 </select>
             </div>
