@@ -52,8 +52,11 @@ class Logout(View):
 class Host(View):
     def get(self, request):
         group = request.GET.get('group')
-        # 判断是否要通过主机组过滤主机
+        # 判断是否要通过主机组管理主机
         if group:
+            # 判断用户是否有主机组的权限
+            if not request.user.host_group.filter(id=group):
+                return HttpResponse('permission denied')
             contact_list = models.Host.objects.filter(group_id=group).order_by('id')
         else:
             contact_list = request.user.host.all().order_by('id')
@@ -194,6 +197,7 @@ class User(View):
                         obj['password'] = make_password(obj['password'])
                     else:
                         obj.pop('password')
+                    print(request.POST)
                     obj_host = []
                     obj_host_group = []
                     if 'host' in obj.keys():
@@ -204,12 +208,10 @@ class User(View):
                         obj.pop('host_group')
                     obj_user = models.User.objects.filter(id=obj['id'])
                     obj_user.update(**obj)
-                    # 给用户添加主机
-                    if obj_host:
-                        obj_user.first().host.set(obj_host)
-                    # 给用户添加主机组
-                    if obj_host_group:
-                        obj_user.first().host_group.set(obj_host_group)
+                    # 修改用户的主机
+                    obj_user.first().host.set(obj_host)
+                    # 修改用户的主机组
+                    obj_user.first().host_group.set(obj_host_group)
             else:
                 return HttpResponse(str(user_form.errors))
         return redirect('/user')
