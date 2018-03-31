@@ -54,7 +54,7 @@ class Host(View):
         group = request.GET.get('group')
         # 判断是否要通过主机组过滤主机
         if group:
-            contact_list = request.user.host.filter(group_id=group).order_by('id')
+            contact_list = models.Host.objects.filter(group_id=group).order_by('id')
         else:
             contact_list = request.user.host.all().order_by('id')
         # 分页显示主机
@@ -160,6 +160,10 @@ class User(View):
     def post(self, request):
         # 判断用户是否有管理员权限
         if request.user.get_role_display() == 'admin':
+            # 删除操作
+            if request.POST.get('handle') == 'delete':
+                models.User.objects.filter(id=request.POST.get('id')).delete()
+                return HttpResponse('ok')
             user_form = UserForm(request.POST)
             if user_form.is_valid():
                 # 添加操作
@@ -186,7 +190,10 @@ class User(View):
                 # 修改操作
                 if request.POST.get('handle') == 'modify':
                     obj = user_form.cleaned_data
-                    obj['password'] = make_password(obj['password'])
+                    if obj['password']:
+                        obj['password'] = make_password(obj['password'])
+                    else:
+                        obj.pop('password')
                     obj_host = []
                     obj_host_group = []
                     if 'host' in obj.keys():
@@ -203,9 +210,6 @@ class User(View):
                     # 给用户添加主机组
                     if obj_host_group:
                         obj_user.first().host_group.set(obj_host_group)
-                # 删除操作
-                if request.POST.get('handle') == 'delete':
-                    pass
             else:
                 return HttpResponse(str(user_form.errors))
         return redirect('/user')

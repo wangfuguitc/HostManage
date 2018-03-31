@@ -17,7 +17,12 @@
                         <td><a href="user?id={{ user.id }}">{{ user.username }}</a></td>
                         <td>{{ user.name }}</td>
                         <td>{{ user.get_role_display }}</td>
-                        <td><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                        <form method="post" action="user" class="form-group" id="deleteId">
+                            {% csrf_token %}
+                            <input name="handle" value="delete" type="hidden">
+                            <input name="id" value="{{ user.id }}" type="hidden">
+                            <td><button type="submit" style="border: none;background-color:transparent;outline: none"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="cursor:pointer"></span></button></td>
+                        </form>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -25,5 +30,16 @@
     </div>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $('.form-group').submit(function () {
+        var a = confirm('是否确认删除')
+        if(a==true){
+            return
+        }
+        else {
+            event.preventDefault();
+        }
+    })
+    </script>
 </body>
 {% endblock %}
